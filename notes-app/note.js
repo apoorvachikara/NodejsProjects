@@ -1,17 +1,24 @@
 const fs = require('fs');
 const fileName = './notes.json';
 const chalk = require('chalk');
-const getNotes = function () {
-    console.log('Getting Notes');
+
+
+const listNotes = () => {
+    const allNotes = loadNotes();
+    console.log(chalk.blue("All notes are dsiplayed below: "))
+    allNotes.forEach(element => {
+            console.log(chalk.cyan.inverse(element.title));
+    });
+   
 }
 
-const addNotes = function (title, body) {
+const addNotes = (title, body) => {
     const notes = loadNotes();
-    const duplicateNotes = notes.filter((note)=> {
-            return note.title === title;
-    });
-
-    if (duplicateNotes.length === 0) {
+    const duplicateNote = notes.find((note) => note.title === title);
+    console.log(__dirname);
+    console.log(__filename);
+    debugger;
+    if (!duplicateNote) {
         notes.push({
             title: title,
             body: body
@@ -25,11 +32,11 @@ const addNotes = function (title, body) {
 
 }
 
-const saveNotes = function (notes) {
+const saveNotes = (notes) => {
     fs.writeFileSync(fileName, JSON.stringify(notes));
 }
 
-const loadNotes = function ()   {
+const loadNotes = () => {
     try {
         const dataBuffer = fs.readFileSync(fileName);
         const data = dataBuffer.toString();
@@ -39,12 +46,9 @@ const loadNotes = function ()   {
     }
 }
 
-const removeNotes = function (title) {
+const removeNotes = (title) => {
     const notes = loadNotes();
-    const updatedNotes = notes.filter((note)=> {
-            return note.title !== title;
-        }
-    );
+    const updatedNotes = notes.filter((note)=> note.title !== title);
     if (notes.length === updatedNotes.length) {
         console.log(chalk.bgRed('No note found!'));
     }
@@ -52,11 +56,23 @@ const removeNotes = function (title) {
         saveNotes(updatedNotes);
         console.log(chalk.bgGreen('Note Removed!'));
     }
-
 }
 
+const readNotes = (title) => {
+    const allNotes = loadNotes();
+    const noteToDisplay = allNotes.find(note => note.title === title);
+    if(noteToDisplay) {
+        console.log(chalk.bgGreen(noteToDisplay.title));
+        console.log(chalk.bgGreen(noteToDisplay.body));
+    }
+    else {
+        console.log(chalk.bgRed("No Note Found!"));
+    }
+}
+ 
 module.exports = {
-    getNotes: getNotes,
+    listNotes: listNotes,
     addNotes: addNotes,
-    removeNotes: removeNotes
+    removeNotes: removeNotes,
+    readNotes: readNotes
 }
